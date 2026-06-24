@@ -7,602 +7,409 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --ink:#020408;
-  --aurora:#00FFD1;
-  --nova:#FF3CAC;
-  --gold:#FFD700;
-  --ice:#C8F4FF;
-  --void:rgba(2,4,8,0);
-  --font-display:'Orbitron',monospace;
-  --font-body:'Space Grotesk',sans-serif;
-}
-html{overflow-x:hidden}
-body{background:var(--ink);color:#fff;font-family:var(--font-body);overflow-x:hidden}
+html,body{width:100%;overflow-x:hidden}
+body{background:#020408;color:#fff;font-family:'Space Grotesk',sans-serif}
 
-/* ── PROGRESS ── */
-#bar{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--aurora),var(--nova));z-index:200;transition:width .08s linear}
+#bar{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#00FFD1,#FF3CAC);z-index:999;transition:width .08s linear}
 
-/* ── NAV ── */
-nav{position:fixed;top:0;left:0;right:0;z-index:190;padding:22px 40px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(2,4,8,.9),transparent)}
-.logo{font-family:var(--font-display);font-size:.9rem;letter-spacing:.25em;background:linear-gradient(90deg,var(--aurora),var(--nova));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.dots{display:flex;gap:10px}
-.dot{width:8px;height:8px;border-radius:50%;border:1.5px solid rgba(255,255,255,.3);transition:.3s;cursor:pointer}
-.dot.on{background:var(--aurora);border-color:var(--aurora);box-shadow:0 0 10px var(--aurora)}
+nav{position:fixed;top:0;left:0;right:0;z-index:990;padding:20px 40px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(2,4,8,.85),transparent)}
+.logo{font-family:'Orbitron',monospace;font-size:.85rem;letter-spacing:.25em;background:linear-gradient(90deg,#00FFD1,#FF3CAC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-dots{display:flex;gap:10px}
+.ndot{width:8px;height:8px;border-radius:50%;border:1.5px solid rgba(255,255,255,.25);cursor:pointer;transition:.3s}
+.ndot.on{background:#00FFD1;border-color:#00FFD1;box-shadow:0 0 10px #00FFD1}
 
-/* ── MAIN PARALLAX CONTAINER ── */
-.scene{position:relative;height:700vh}
-.stick{position:sticky;top:0;height:100vh;overflow:hidden}
+/* SCENE */
+.scene{position:relative;height:600vh}
+.stick{position:sticky;top:0;height:100vh;overflow:hidden;background:#020408}
 
-/* ── CANVAS ── */
-#bg{position:absolute;inset:0;z-index:0}
+canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+#cvBg{z-index:1}
+#cvPart{z-index:12;pointer-events:none}
+#cvWarp{z-index:13;pointer-events:none;opacity:0}
 
-/* ── SUN ── */
-#sun-wrap{position:absolute;bottom:-180px;left:50%;transform:translateX(-50%);z-index:1;will-change:transform}
-.sun-core{width:320px;height:320px;border-radius:50%;background:radial-gradient(circle at 40% 40%,#fff8e1 0%,#FFD700 25%,#FF8C00 55%,#FF4500 80%,transparent 100%);box-shadow:0 0 60px 20px #FF8C00,0 0 120px 60px rgba(255,140,0,.5),0 0 240px 120px rgba(255,69,0,.2);animation:pulse 4s ease-in-out infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 60px 20px #FF8C00,0 0 120px 60px rgba(255,140,0,.5),0 0 240px 120px rgba(255,69,0,.2)}50%{box-shadow:0 0 80px 30px #FFB300,0 0 160px 80px rgba(255,160,0,.6),0 0 300px 160px rgba(255,100,0,.25)}}
-.corona{position:absolute;inset:-60px;border-radius:50%;animation:spin 20s linear infinite}
-.ray{position:absolute;top:50%;left:50%;width:2px;border-radius:2px;background:linear-gradient(to top,rgba(255,200,0,.6),transparent);transform-origin:bottom center}
+/* SUN */
+#sunWrap{position:absolute;left:50%;bottom:-200px;transform:translateX(-50%);z-index:3;will-change:transform;opacity:0}
+.sun{width:280px;height:280px;border-radius:50%;background:radial-gradient(circle at 38% 38%,#fffde7,#FFD700 28%,#FF8C00 58%,#FF4500 80%,transparent 100%);box-shadow:0 0 60px 20px #FF8C00,0 0 130px 60px rgba(255,140,0,.45),0 0 260px 120px rgba(255,60,0,.18);animation:sunPulse 3.5s ease-in-out infinite;position:relative}
+@keyframes sunPulse{0%,100%{box-shadow:0 0 60px 20px #FF8C00,0 0 130px 60px rgba(255,140,0,.45),0 0 260px 120px rgba(255,60,0,.18)}50%{box-shadow:0 0 80px 30px #FFB300,0 0 170px 80px rgba(255,160,0,.55),0 0 320px 160px rgba(255,80,0,.22)}}
+.corona{position:absolute;inset:-50px;animation:spin 22s linear infinite;border-radius:50%}
+.ray{position:absolute;top:50%;left:50%;transform-origin:0 0;border-radius:99px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── PLANETS ── */
-.planet{position:absolute;border-radius:50%;will-change:transform}
+/* PLANETS */
+.planet{position:absolute;border-radius:50%;will-change:transform;opacity:0}
+#pIce{width:240px;height:240px;top:-50px;left:-50px;background:radial-gradient(circle at 36% 34%,#e8f4f8,#89cff0 30%,#4a90c4 58%,#1a3a5c 85%);box-shadow:inset -30px -18px 50px rgba(0,0,0,.5),0 0 70px rgba(100,180,240,.22)}
+.ice-ring{position:absolute;width:360px;height:65px;border:12px solid rgba(140,210,250,.22);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%) rotateX(73deg);box-shadow:0 0 18px rgba(140,210,250,.1)}
+#pMars{width:170px;height:170px;top:10%;right:8%;background:radial-gradient(circle at 38% 35%,#e87c6a,#c0392b 42%,#7d1a0d 80%);box-shadow:inset -22px -14px 38px rgba(0,0,0,.6),0 0 55px rgba(200,57,43,.28)}
+#pVoid{width:130px;height:130px;bottom:14%;right:6%;background:radial-gradient(circle at 38% 35%,#9c59d1,#5b2d8e 45%,#2a1060 80%);box-shadow:inset -18px -10px 32px rgba(0,0,0,.7),0 0 45px rgba(100,30,180,.38)}
 
-#p-mars{width:180px;height:180px;background:radial-gradient(circle at 38% 35%,#e87c6a,#c0392b 40%,#7d1a0d 80%);box-shadow:inset -25px -15px 40px rgba(0,0,0,.6),0 0 60px rgba(200,57,43,.3);top:12%;right:10%}
-#p-mars::after{content:'';position:absolute;width:65%;height:18px;background:rgba(200,100,80,.15);border-radius:50%;top:35%;left:10%;transform:rotate(-8deg)}
+/* NEBULA */
+#nebula{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 20% 60%,rgba(255,60,172,.13) 0%,transparent 55%),radial-gradient(ellipse at 80% 30%,rgba(0,255,209,.09) 0%,transparent 50%),radial-gradient(ellipse at 50% 100%,rgba(100,0,255,.18) 0%,transparent 60%)}
 
-#p-ice{width:260px;height:260px;background:radial-gradient(circle at 36% 34%,#e8f4f8,#89cff0 30%,#4a90c4 60%,#1a3a5c 85%);box-shadow:inset -35px -20px 55px rgba(0,0,0,.5),0 0 80px rgba(100,180,240,.25);top:-60px;left:-40px}
-.ice-ring{position:absolute;width:380px;height:70px;border:14px solid rgba(140,210,250,.2);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%) rotateX(72deg);box-shadow:0 0 20px rgba(140,210,250,.1)}
+/* ROCKET */
+#rocket{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);width:52px;z-index:15;will-change:transform}
+.flames{position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px}
+.fl{border-radius:50% 50% 40% 40%;animation:fl .13s infinite alternate}
+.fl1{width:20px;height:36px;background:linear-gradient(to bottom,#fff,#00FFD1,#0077b6)}
+.fl2{width:13px;height:22px;background:linear-gradient(to bottom,#00FFD1,#0077b6);animation-delay:.06s}
+.fl3{width:7px;height:13px;background:linear-gradient(to bottom,#0077b6,transparent);animation-delay:.1s}
+@keyframes fl{to{transform:scaleX(.78) scaleY(1.09)}}
 
-#p-void{width:140px;height:140px;background:radial-gradient(circle at 38% 35%,#9c59d1,#5b2d8e 45%,#2a1060 80%);box-shadow:inset -20px -12px 35px rgba(0,0,0,.7),0 0 50px rgba(100,30,180,.4);bottom:15%;right:5%}
-
-/* ── ASTEROID BELT ── */
-#belt{position:absolute;width:100%;height:4px;top:45%;z-index:2;will-change:transform}
-
-/* ── ROCKET ── */
-#rocket{position:absolute;left:50%;bottom:5%;transform:translateX(-50%);width:56px;z-index:15;will-change:transform;filter:drop-shadow(0 0 18px rgba(0,255,209,.5))}
-#rocket svg{display:block;width:100%}
-.flames{position:absolute;bottom:-32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px}
-.fl{border-radius:50% 50% 40% 40%;animation:fl .12s infinite alternate}
-.fl1{width:22px;height:38px;background:linear-gradient(to bottom,#fff,#00FFD1,#00b4d8)}
-.fl2{width:14px;height:24px;background:linear-gradient(to bottom,#00FFD1,#0077b6);animation-delay:.06s}
-.fl3{width:8px;height:14px;background:linear-gradient(to bottom,#0077b6,transparent);animation-delay:.1s}
-@keyframes fl{to{transform:scaleX(.8) scaleY(1.08)}}
-
-/* ── PARTICLE CANVAS ── */
-#particles{position:absolute;inset:0;z-index:14;pointer-events:none}
-
-/* ── TEXT CARDS ── */
+/* CARDS — all hidden by default */
 .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:20;pointer-events:none}
-.card{opacity:0;transform:translateY(40px) scale(.97);transition:opacity .5s ease,transform .5s ease;text-align:center;padding:0 28px;max-width:700px;pointer-events:none}
+.card{opacity:0;transform:translateY(36px);text-align:center;padding:0 28px;max-width:680px;transition:opacity .45s ease,transform .45s ease;pointer-events:none}
+.eyebrow{font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:.4em;color:#00FFD1;margin-bottom:14px;text-transform:uppercase}
+.t1{display:block;font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(2.8rem,8.5vw,7rem);color:#fff;line-height:1;text-shadow:0 0 40px rgba(0,255,209,.35)}
+.t2{display:block;font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(2.8rem,8.5vw,7rem);line-height:1;background:linear-gradient(90deg,#00FFD1,#FF3CAC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 18px rgba(0,255,209,.4))}
+.t2b{background:linear-gradient(90deg,#FF3CAC,#FFD700)!important}
+.sub{font-weight:300;font-size:1rem;line-height:1.8;color:rgba(200,244,255,.6);max-width:460px;margin:18px auto 0}
 
-.eyebrow{font-family:var(--font-display);font-size:.6rem;letter-spacing:.4em;color:var(--aurora);margin-bottom:16px;text-transform:uppercase}
+/* SCROLL HINT */
+#hint{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;align-items:center;gap:8px;transition:opacity .4s}
+#hint span{font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.35em;color:rgba(200,244,255,.45)}
+.arr{width:1px;height:42px;background:linear-gradient(to bottom,#00FFD1,transparent);animation:arrAnim 1.6s infinite}
+@keyframes arrAnim{0%{opacity:0;transform:scaleY(0);transform-origin:top}50%{opacity:1;transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{opacity:0;transform:scaleY(0);transform-origin:bottom}}
 
-.big-title{font-family:var(--font-display);font-weight:900;line-height:1;margin-bottom:20px;position:relative}
-.big-title .line1{display:block;font-size:clamp(3rem,9vw,7.5rem);color:#fff;text-shadow:0 0 40px rgba(0,255,209,.4)}
-.big-title .line2{display:block;font-size:clamp(3rem,9vw,7.5rem);background:linear-gradient(90deg,var(--aurora),var(--nova));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 20px rgba(0,255,209,.5))}
+/* END */
+#end{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 24px;background:radial-gradient(ellipse at center,#0a0020 0%,#020408 65%)}
+.end-title{font-family:'Orbitron',monospace;font-size:clamp(2.4rem,7vw,5.5rem);font-weight:900;line-height:1.08;background:linear-gradient(135deg,#00FFD1,#FF3CAC,#FFD700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:24px}
+.end-sub{font-weight:300;color:rgba(200,244,255,.58);font-size:1rem;line-height:1.8;max-width:480px;margin-bottom:36px}
+.badge{font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:.28em;color:#00FFD1;border:1px solid rgba(0,255,209,.28);padding:11px 26px;background:rgba(0,255,209,.04)}
 
-.sub{font-weight:300;font-size:1.05rem;line-height:1.8;color:rgba(200,244,255,.65);max-width:480px;margin:0 auto}
-
-/* ── GLITCH ── */
-.glitch{position:relative}
-.glitch::before,.glitch::after{content:attr(data-text);position:absolute;inset:0;font-family:var(--font-display);font-weight:900;font-size:inherit;line-height:1}
-.glitch::before{color:var(--nova);clip-path:polygon(0 30%,100% 30%,100% 50%,0 50%);animation:glitch1 3s infinite 1s}
-.glitch::after{color:var(--aurora);clip-path:polygon(0 60%,100% 60%,100% 75%,0 75%);animation:glitch2 3s infinite 1s}
-@keyframes glitch1{0%,94%{transform:translateX(0)}95%{transform:translateX(-4px)}97%{transform:translateX(4px)}100%{transform:translateX(0)}}
-@keyframes glitch2{0%,94%{transform:translateX(0)}95%{transform:translateX(4px)}97%{transform:translateX(-4px)}100%{transform:translateX(0)}}
-
-/* ── SCROLL HINT ── */
-#hint{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;align-items:center;gap:8px;transition:opacity .4s}
-#hint span{font-family:var(--font-display);font-size:.55rem;letter-spacing:.35em;color:rgba(200,244,255,.5)}
-.arr{width:1px;height:44px;background:linear-gradient(to bottom,var(--aurora),transparent);animation:arrPulse 1.6s infinite}
-@keyframes arrPulse{0%{opacity:0;transform:scaleY(0);transform-origin:top}50%{opacity:1;transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{opacity:0;transform:scaleY(0);transform-origin:bottom}}
-
-/* ── NEBULA OVERLAY ── */
-#nebula{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity 1s;background:radial-gradient(ellipse at 20% 60%,rgba(255,60,172,.15) 0%,transparent 55%),radial-gradient(ellipse at 80% 30%,rgba(0,255,209,.1) 0%,transparent 50%),radial-gradient(ellipse at 50% 100%,rgba(100,0,255,.2) 0%,transparent 60%)}
-
-/* ── WARP TUNNEL ── */
-#warp{position:absolute;inset:0;z-index:2;opacity:0;pointer-events:none}
-
-/* ── END SECTION ── */
-#end{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 24px;background:radial-gradient(ellipse at center,#0a0020 0%,var(--ink) 70%);position:relative;overflow:hidden}
-#end::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,255,209,.05),transparent 70%)}
-.end-title{font-family:var(--font-display);font-size:clamp(2.5rem,8vw,6rem);font-weight:900;line-height:1.05;background:linear-gradient(135deg,var(--aurora) 0%,var(--nova) 60%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:30px}
-.end-sub{font-weight:300;color:rgba(200,244,255,.6);font-size:1.1rem;line-height:1.8;max-width:520px;margin-bottom:40px}
-.badge{font-family:var(--font-display);font-size:.6rem;letter-spacing:.3em;color:var(--aurora);border:1px solid rgba(0,255,209,.3);padding:12px 28px;background:rgba(0,255,209,.04)}
-.orbit-ring{position:absolute;border-radius:50%;border:1px solid rgba(0,255,209,.08);animation:orbitSpin 30s linear infinite}
-@keyframes orbitSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
-
-@media(prefers-reduced-motion:reduce){.fl,.corona,.sun-core,.arr,.glitch::before,.glitch::after{animation:none}}
-@media(max-width:600px){nav{padding:16px 20px}#p-ice{width:160px;height:160px;left:-30px}.ice-ring{width:240px;height:44px}#p-mars{width:110px;height:110px}#sun-wrap{bottom:-120px}}.sun-core{width:200px;height:200px}}
+@media(prefers-reduced-motion:reduce){.fl,.corona,.arr,.sunPulse{animation:none}}
+@media(max-width:600px){nav{padding:14px 18px}#pIce{width:150px;height:150px}.ice-ring{width:220px;height:42px}#pMars{width:100px;height:100px}}
 </style>
 </head>
 <body>
 <div id="bar"></div>
-
 <nav>
   <div class="logo">ODYSSEY</div>
-  <div class="dots">
-    <div class="dot on" data-i="0"></div>
-    <div class="dot" data-i="1"></div>
-    <div class="dot" data-i="2"></div>
-    <div class="dot" data-i="3"></div>
-    <div class="dot" data-i="4"></div>
+  <div class="nav-dots">
+    <div class="ndot on" data-i="0"></div>
+    <div class="ndot" data-i="1"></div>
+    <div class="ndot" data-i="2"></div>
+    <div class="ndot" data-i="3"></div>
+    <div class="ndot" data-i="4"></div>
   </div>
 </nav>
-
 <div id="hint"><span>SCROLL</span><div class="arr"></div></div>
 
 <div class="scene" id="scene">
   <div class="stick" id="stick">
+    <canvas id="cvBg"></canvas>
+    <canvas id="cvPart"></canvas>
+    <canvas id="cvWarp"></canvas>
 
-    <!-- Star background canvas -->
-    <canvas id="bg"></canvas>
-    <!-- Particle trail canvas -->
-    <canvas id="particles"></canvas>
-
-    <!-- Nebula atmosphere -->
     <div id="nebula"></div>
 
-    <!-- Warp lines canvas -->
-    <canvas id="warp"></canvas>
+    <div id="sunWrap"><div class="sun"><div class="corona" id="corona"></div></div></div>
 
-    <!-- Sun -->
-    <div id="sun-wrap">
-      <div class="sun-core" id="sun-core">
-        <div class="corona" id="corona"></div>
-      </div>
-    </div>
+    <div class="planet" id="pIce"><div class="ice-ring"></div></div>
+    <div class="planet" id="pMars"></div>
+    <div class="planet" id="pVoid"></div>
 
-    <!-- Planets -->
-    <div class="planet" id="p-ice"><div class="ice-ring"></div></div>
-    <div class="planet" id="p-mars"></div>
-    <div class="planet" id="p-void"></div>
-
-    <!-- Asteroid belt -->
-    <div id="belt"></div>
-
-    <!-- Rocket -->
     <div id="rocket">
       <svg viewBox="0 0 60 130" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="bodyGrad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="#c8d6e5"/>
-            <stop offset="50%" stop-color="#f1f2f6"/>
-            <stop offset="100%" stop-color="#a4b0be"/>
-          </linearGradient>
-          <linearGradient id="noseGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#00FFD1"/>
-            <stop offset="100%" stop-color="#0077b6"/>
-          </linearGradient>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="2" result="blur"/>
-            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
+          <linearGradient id="bg1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#c8d6e5"/><stop offset="50%" stop-color="#f1f2f6"/><stop offset="100%" stop-color="#a4b0be"/></linearGradient>
+          <linearGradient id="ng1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00FFD1"/><stop offset="100%" stop-color="#0077b6"/></linearGradient>
         </defs>
-        <!-- Fins -->
-        <path d="M12 80 L0 108 L12 104Z" fill="#636e72" opacity=".9"/>
-        <path d="M48 80 L60 108 L48 104Z" fill="#636e72" opacity=".9"/>
-        <path d="M12 80 L3 100 L12 97Z" fill="#2d3436" opacity=".6"/>
-        <path d="M48 80 L57 100 L48 97Z" fill="#2d3436" opacity=".6"/>
-        <!-- Body -->
-        <rect x="12" y="42" width="36" height="64" rx="6" fill="url(#bodyGrad)"/>
-        <!-- Nose cone -->
-        <path d="M30 2 C22 2 14 22 12 42 L48 42 C46 22 38 2 30 2Z" fill="url(#noseGrad)"/>
-        <!-- Stripe accent -->
-        <rect x="12" y="68" width="36" height="7" fill="#FF3CAC" opacity=".7"/>
-        <rect x="12" y="78" width="36" height="3" fill="rgba(0,255,209,.5)"/>
-        <!-- Porthole -->
-        <circle cx="30" cy="56" r="11" fill="#0a0020" stroke="rgba(0,255,209,.8)" stroke-width="2" filter="url(#glow)"/>
+        <path d="M12 80 L0 110 L12 105Z" fill="#636e72"/>
+        <path d="M48 80 L60 110 L48 105Z" fill="#636e72"/>
+        <rect x="12" y="42" width="36" height="64" rx="5" fill="url(#bg1)"/>
+        <path d="M30 2 C22 2 14 22 12 42 L48 42 C46 22 38 2 30 2Z" fill="url(#ng1)"/>
+        <rect x="12" y="68" width="36" height="7" fill="#FF3CAC" opacity=".75"/>
+        <rect x="12" y="77" width="36" height="3" fill="rgba(0,255,209,.55)"/>
+        <circle cx="30" cy="56" r="11" fill="#0a0020" stroke="rgba(0,255,209,.85)" stroke-width="2"/>
         <circle cx="30" cy="56" r="7" fill="#0d1b2a"/>
         <ellipse cx="27" cy="53" rx="3" ry="2" fill="rgba(0,255,209,.35)"/>
-        <!-- Nozzle -->
         <rect x="21" y="104" width="18" height="14" rx="3" fill="#636e72"/>
         <rect x="23" y="112" width="14" height="6" rx="2" fill="#2d3436"/>
-        <!-- Panel lines -->
-        <line x1="30" y1="44" x2="30" y2="66" stroke="rgba(0,0,0,.15)" stroke-width="1"/>
-        <line x1="12" y1="60" x2="48" y2="60" stroke="rgba(0,0,0,.1)" stroke-width="1"/>
       </svg>
-      <div class="flames">
-        <div class="fl fl1"></div>
-        <div class="fl fl2"></div>
-        <div class="fl fl3"></div>
-      </div>
+      <div class="flames"><div class="fl fl1"></div><div class="fl fl2"></div><div class="fl fl3"></div></div>
     </div>
 
-    <!-- Section overlays -->
+    <!-- 5 section cards -->
     <div class="overlay"><div class="card" id="c0">
       <div class="eyebrow">Mission · Day Zero</div>
-      <div class="big-title">
-        <span class="line1 glitch" data-text="INTO THE">INTO THE</span>
-        <span class="line2">COSMOS</span>
-      </div>
-      <p class="sub">The universe is not out there — it is in here. Every atom in your body was forged in the heart of a dying star. You are already made of space.</p>
+      <span class="t1">INTO THE</span>
+      <span class="t2">COSMOS</span>
+      <p class="sub">Every atom in your body was forged in the heart of a dying star. You are already made of space. Now it is time to return.</p>
     </div></div>
 
     <div class="overlay"><div class="card" id="c1">
       <div class="eyebrow">Altitude · 100 km</div>
-      <div class="big-title">
-        <span class="line1">LEAVING</span>
-        <span class="line2">EVERYTHING</span>
-      </div>
-      <p class="sub">The Kármán line. One hundred kilometres straight up. Below — all of human history. Above — an ocean with no shore and no bottom.</p>
+      <span class="t1">LEAVING</span>
+      <span class="t2">EARTH</span>
+      <p class="sub">The Kármán line. One hundred kilometres up. Below — all of human history. Above — an ocean with no shore and no bottom.</p>
     </div></div>
 
     <div class="overlay"><div class="card" id="c2">
       <div class="eyebrow">Solar System · 4 AU</div>
-      <div class="big-title">
-        <span class="line1">BETWEEN</span>
-        <span class="line2">WORLDS</span>
-      </div>
-      <p class="sub">Planets drift past like lanterns in an infinite dark sea. Each one a world entire — storms, mountains, oceans — untouched by human hands.</p>
+      <span class="t1">BETWEEN</span>
+      <span class="t2">WORLDS</span>
+      <p class="sub">Planets drift past like lanterns in an infinite dark sea. Each one a world entire — storms, mountains, moons — untouched by human hands.</p>
     </div></div>
 
     <div class="overlay"><div class="card" id="c3">
       <div class="eyebrow">Interstellar · 4.2 ly</div>
-      <div class="big-title">
-        <span class="line1">BEYOND</span>
-        <span class="line2" style="background:linear-gradient(90deg,var(--nova),var(--gold));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">THE KNOWN</span>
-      </div>
-      <p class="sub">No star charts. No signal from home. Just the pale glow of your instruments and the certain knowledge that you are the furthest a human has ever been.</p>
+      <span class="t1">BEYOND</span>
+      <span class="t2 t2b">THE KNOWN</span>
+      <p class="sub">No star charts. No signal from home. Just the pale glow of your instruments and the certainty that you are further than any human has ever been.</p>
     </div></div>
 
     <div class="overlay"><div class="card" id="c4">
       <div class="eyebrow">Edge of all things</div>
-      <div class="big-title">
-        <span class="line1">THE VOID</span>
-        <span class="line2">INFINITE</span>
-      </div>
+      <span class="t1">THE VOID</span>
+      <span class="t2">INFINITE</span>
       <p class="sub">Here, at the rim of everything, you realise the journey was never about the destination. It was about who you became on the way.</p>
     </div></div>
 
   </div>
 </div>
 
-<!-- END -->
 <section id="end">
-  <div class="orbit-ring" style="width:600px;height:600px;top:50%;left:50%;transform:translate(-50%,-50%)"></div>
-  <div class="orbit-ring" style="width:900px;height:900px;top:50%;left:50%;transform:translate(-50%,-50%);animation-duration:50s;animation-direction:reverse"></div>
   <div class="end-title">Journey<br>Complete.</div>
-  <p class="end-sub">600 quintillion kilometres. Five encounters. One rocket. You did it. The cosmos bows to the explorer who dared scroll all the way.</p>
-  <div class="badge">IIT BOMBAY TECHFEST · ODYSSEY PARALLAX · CAMPUS AMBASSADOR</div>
+  <p class="end-sub">600 quintillion kilometres. Five sections. One rocket. The cosmos bows to every explorer who dares scroll all the way to the edge.</p>
+  <div class="badge">IIT BOMBAY TECHFEST · ODYSSEY · CAMPUS AMBASSADOR</div>
 </section>
 
 <script>
-// ── HELPERS ──
-const $ = id => document.getElementById(id);
-const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
-const lerp = (a,b,t) => a+(b-a)*t;
-const ease = x => x<.5 ? 4*x*x*x : 1-Math.pow(-2*x+2,3)/2;
+const $  = id => document.getElementById(id);
+const cl = (v,a,b) => Math.max(a,Math.min(b,v));
+const lr = (a,b,t) => a+(b-a)*t;
+const ez = x => { x=cl(x,0,1); return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2; };
 
-// ── STAR SYSTEM ──
-const bgCanvas = $('bg');
-const bgCtx = bgCanvas.getContext('2d');
-let W, H;
-let stars = [], shootingStars = [];
+// ── STARS ──
+const cvBg  = $('cvBg'),  ctxBg  = cvBg.getContext('2d');
+const cvPart= $('cvPart'),ctxPart= cvPart.getContext('2d');
+const cvWarp= $('cvWarp'),ctxWarp= cvWarp.getContext('2d');
+let W=0, H=0, stars=[], shooters=[], particles=[], wLines=[];
 
-function initStars() {
-  W = bgCanvas.width = window.innerWidth;
-  H = bgCanvas.height = window.innerHeight;
-  stars = [];
-  for (let i = 0; i < 350; i++) {
+function resize(){
+  W = cvBg.width = cvPart.width = cvWarp.width = window.innerWidth;
+  H = cvBg.height= cvPart.height= cvWarp.height= window.innerHeight;
+  stars=[];
+  for(let i=0;i<320;i++){
     stars.push({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      r: Math.random() < .1 ? 1.8+Math.random()*1.2 : .4+Math.random()*1.1,
-      a: .4+Math.random()*.6,
-      tw: Math.random()*Math.PI*2,
-      speed: .008+Math.random()*.015,
-      layer: Math.floor(Math.random()*3) // 0=far,1=mid,2=near
+      x:Math.random()*W, y:Math.random()*H,
+      r:.4+Math.random()*1.6,
+      a:.35+Math.random()*.65,
+      tw:Math.random()*Math.PI*2,
+      spd:.006+Math.random()*.014,
+      layer:Math.floor(Math.random()*3)
     });
   }
-}
-
-function spawnShooter() {
-  shootingStars.push({
-    x: Math.random()*W*.6+W*.2,
-    y: Math.random()*H*.3,
-    vx: 4+Math.random()*6,
-    vy: 2+Math.random()*3,
-    len: 80+Math.random()*120,
-    alpha: 1,
-    life: 1
-  });
-}
-
-function drawBg(scrollP) {
-  bgCtx.clearRect(0,0,W,H);
-
-  // Deep space gradient
-  const grad = bgCtx.createRadialGradient(W*.5,H*.5,0,W*.5,H*.5,Math.max(W,H)*.7);
-  if (scrollP < .4) {
-    grad.addColorStop(0,'rgba(10,15,40,.95)');
-    grad.addColorStop(1,'rgba(2,4,8,1)');
-  } else if (scrollP < .7) {
-    grad.addColorStop(0,`rgba(${lerp(10,40,scrollP*2)},${lerp(15,5,scrollP)},${lerp(40,60,scrollP)},.95)`);
-    grad.addColorStop(1,'rgba(2,4,8,1)');
-  } else {
-    const p2 = (scrollP-.7)/.3;
-    grad.addColorStop(0,`rgba(${lerp(40,0,p2)},${lerp(5,5,p2)},${lerp(60,30,p2)},.95)`);
-    grad.addColorStop(1,'rgba(2,4,8,1)');
+  wLines=[];
+  for(let i=0;i<55;i++){
+    const ang=Math.random()*Math.PI*2, d=40+Math.random()*260;
+    wLines.push({ang,d,spd:.3+Math.random()*.7,len:0,maxLen:50+Math.random()*180,al:.25+Math.random()*.5});
   }
-  bgCtx.fillStyle = grad;
-  bgCtx.fillRect(0,0,W,H);
+}
 
-  // Stars with parallax by layer
-  const layerSpeeds = [.02,.06,.12];
-  stars.forEach(s => {
-    const oy = (scrollP * H * layerSpeeds[s.layer]) % H;
-    let y = (s.y + oy) % H;
-    if (y < 0) y += H;
-    const twinkle = .7 + .3*Math.sin(s.tw += s.speed);
-    const size = s.r + (scrollP > .6 ? s.r*.5*ease((scrollP-.6)/.4) : 0);
-    bgCtx.save();
-    if (s.r > 1.2) {
-      // Bigger stars get a glow
-      const grd = bgCtx.createRadialGradient(s.x,y,0,s.x,y,s.r*3);
-      grd.addColorStop(0,`rgba(200,244,255,${s.a*twinkle})`);
-      grd.addColorStop(1,'rgba(200,244,255,0)');
-      bgCtx.fillStyle = grd;
-      bgCtx.beginPath();
-      bgCtx.arc(s.x,y,s.r*3,0,Math.PI*2);
-      bgCtx.fill();
+function drawBg(p){
+  ctxBg.clearRect(0,0,W,H);
+  // Background gradient shifts with scroll
+  const r1=Math.round(lr(2,15,p)), g1=Math.round(lr(4,3,p)), b1=Math.round(lr(8,25,p));
+  const grd=ctxBg.createRadialGradient(W*.5,H*.5,0,W*.5,H*.5,Math.max(W,H)*.75);
+  grd.addColorStop(0,`rgb(${r1+8},${g1+8},${b1+18})`);
+  grd.addColorStop(1,`rgb(${r1},${g1},${b1})`);
+  ctxBg.fillStyle=grd; ctxBg.fillRect(0,0,W,H);
+
+  // Stars — 3 layers at different parallax speeds
+  const speeds=[.018,.055,.11];
+  stars.forEach(s=>{
+    const oy=(p*(H*3)*speeds[s.layer])%H;
+    let y=(s.y+oy)%H; if(y<0)y+=H;
+    s.tw+=s.spd;
+    const tw=.65+.35*Math.sin(s.tw);
+    const sz=s.r*(1+(p>.6?(p-.6)/.4*.5:0));
+    if(s.r>1.1){
+      const g2=ctxBg.createRadialGradient(s.x,y,0,s.x,y,s.r*3);
+      g2.addColorStop(0,`rgba(200,244,255,${s.a*tw*.6})`);
+      g2.addColorStop(1,'rgba(200,244,255,0)');
+      ctxBg.fillStyle=g2;
+      ctxBg.beginPath(); ctxBg.arc(s.x,y,s.r*3,0,Math.PI*2); ctxBg.fill();
     }
-    bgCtx.fillStyle = `rgba(220,240,255,${s.a*twinkle})`;
-    bgCtx.beginPath();
-    bgCtx.arc(s.x,y,size,0,Math.PI*2);
-    bgCtx.fill();
-    bgCtx.restore();
+    ctxBg.fillStyle=`rgba(220,240,255,${s.a*tw})`;
+    ctxBg.beginPath(); ctxBg.arc(s.x,y,sz,0,Math.PI*2); ctxBg.fill();
   });
 
   // Shooting stars
-  shootingStars = shootingStars.filter(s => {
-    s.life -= .025;
-    if (s.life <= 0) return false;
-    s.x += s.vx; s.y += s.vy;
-    const grad2 = bgCtx.createLinearGradient(s.x,s.y,s.x-s.vx*s.len/6,s.y-s.vy*s.len/6);
-    grad2.addColorStop(0,`rgba(0,255,209,${s.life*.8})`);
-    grad2.addColorStop(1,'rgba(0,255,209,0)');
-    bgCtx.beginPath();
-    bgCtx.strokeStyle = grad2;
-    bgCtx.lineWidth = 2;
-    bgCtx.moveTo(s.x,s.y);
-    bgCtx.lineTo(s.x-s.vx*s.len/6,s.y-s.vy*s.len/6);
-    bgCtx.stroke();
+  if(Math.random()<.007) shooters.push({
+    x:Math.random()*W*.7+W*.15, y:Math.random()*H*.3,
+    vx:3.5+Math.random()*5, vy:1.5+Math.random()*2.5,
+    life:1, len:70+Math.random()*110
+  });
+  shooters=shooters.filter(s=>{
+    s.life-=.024; if(s.life<=0)return false;
+    s.x+=s.vx; s.y+=s.vy;
+    const g3=ctxBg.createLinearGradient(s.x,s.y,s.x-s.vx*s.len/6,s.y-s.vy*s.len/6);
+    g3.addColorStop(0,`rgba(0,255,209,${s.life*.8})`);
+    g3.addColorStop(1,'rgba(0,255,209,0)');
+    ctxBg.beginPath(); ctxBg.strokeStyle=g3; ctxBg.lineWidth=1.8;
+    ctxBg.moveTo(s.x,s.y); ctxBg.lineTo(s.x-s.vx*s.len/6,s.y-s.vy*s.len/6); ctxBg.stroke();
     return true;
   });
 }
 
-// ── PARTICLES ──
-const pCanvas = $('particles');
-const pCtx = pCanvas.getContext('2d');
-let particles = [];
-
-function resizeP() {
-  pCanvas.width = window.innerWidth;
-  pCanvas.height = window.innerHeight;
-}
-
-function spawnParticles(x, y) {
-  if (particles.length > 120) return;
-  for (let i=0; i<2; i++) {
-    particles.push({
-      x: x + (Math.random()-.5)*8,
-      y: y + 70,
-      vx: (Math.random()-.5)*1.2,
-      vy: 1.5+Math.random()*2.5,
-      life: 1,
-      r: 1+Math.random()*2.5,
-      hue: Math.random() < .5 ? 170 : 340
+function drawParticles(rx,ry){
+  if(particles.length<100){
+    for(let i=0;i<2;i++) particles.push({
+      x:rx+(Math.random()-.5)*7, y:ry,
+      vx:(Math.random()-.5)*1,vy:1.4+Math.random()*2.2,
+      life:1, r:1+Math.random()*2.2, hue:Math.random()<.5?170:340
     });
   }
-}
-
-function drawParticles() {
-  pCtx.clearRect(0,0,pCanvas.width,pCanvas.height);
-  particles = particles.filter(p => {
-    p.life -= .022;
-    if (p.life <= 0) return false;
-    p.x += p.vx; p.y += p.vy;
-    pCtx.beginPath();
-    pCtx.arc(p.x,p.y,p.r*p.life,0,Math.PI*2);
-    pCtx.fillStyle = `hsla(${p.hue},100%,65%,${p.life*.7})`;
-    pCtx.fill();
-    return true;
+  ctxPart.clearRect(0,0,W,H);
+  particles=particles.filter(p=>{
+    p.life-=.022; if(p.life<=0)return false;
+    p.x+=p.vx; p.y+=p.vy;
+    ctxPart.beginPath();
+    ctxPart.arc(p.x,p.y,p.r*p.life,0,Math.PI*2);
+    ctxPart.fillStyle=`hsla(${p.hue},100%,65%,${p.life*.65})`;
+    ctxPart.fill(); return true;
   });
 }
 
-// ── WARP LINES ──
-const wCanvas = $('warp');
-const wCtx = wCanvas.getContext('2d');
-let wLines = [];
-
-function resizeW() { wCanvas.width=window.innerWidth; wCanvas.height=window.innerHeight; }
-
-function initWarpLines() {
-  wLines = [];
-  for (let i=0; i<60; i++) {
-    const angle = Math.random()*Math.PI*2;
-    const dist = 50+Math.random()*300;
-    wLines.push({
-      angle, dist,
-      speed: .4+Math.random()*.8,
-      len: 0,
-      maxLen: 60+Math.random()*200,
-      alpha: .3+Math.random()*.5
-    });
-  }
-}
-
-function drawWarp(opacity) {
-  wCtx.clearRect(0,0,wCanvas.width,wCanvas.height);
-  if (opacity <= 0) return;
-  const cx = wCanvas.width/2, cy = wCanvas.height/2;
-  wLines.forEach(l => {
-    l.len = Math.min(l.maxLen, l.len + l.speed*opacity*3);
-    const sx = cx + Math.cos(l.angle)*(l.dist);
-    const sy = cy + Math.sin(l.angle)*(l.dist*wCanvas.height/wCanvas.width);
-    const ex = cx + Math.cos(l.angle)*(l.dist+l.len);
-    const ey = cy + Math.sin(l.angle)*((l.dist+l.len)*wCanvas.height/wCanvas.width);
-    const g = wCtx.createLinearGradient(sx,sy,ex,ey);
+function drawWarp(op){
+  ctxWarp.clearRect(0,0,W,H);
+  cvWarp.style.opacity=op;
+  if(op<=0)return;
+  const cx=W/2,cy=H/2;
+  wLines.forEach(l=>{
+    l.len=Math.min(l.maxLen,l.len+l.spd*op*2.5);
+    const sx=cx+Math.cos(l.ang)*l.d, sy=cy+Math.sin(l.ang)*l.d*(H/W);
+    const ex=cx+Math.cos(l.ang)*(l.d+l.len), ey=cy+Math.sin(l.ang)*(l.d+l.len)*(H/W);
+    const g=ctxWarp.createLinearGradient(sx,sy,ex,ey);
     g.addColorStop(0,'rgba(0,255,209,0)');
-    g.addColorStop(1,`rgba(0,255,209,${l.alpha*opacity})`);
-    wCtx.beginPath();
-    wCtx.strokeStyle = g;
-    wCtx.lineWidth = .8+Math.random()*.5;
-    wCtx.moveTo(sx,sy); wCtx.lineTo(ex,ey);
-    wCtx.stroke();
+    g.addColorStop(1,`rgba(0,255,209,${l.al*op})`);
+    ctxWarp.beginPath(); ctxWarp.strokeStyle=g; ctxWarp.lineWidth=.9;
+    ctxWarp.moveTo(sx,sy); ctxWarp.lineTo(ex,ey); ctxWarp.stroke();
   });
 }
 
-// ── CORONA RAYS ──
-function buildCorona() {
-  const corona = $('corona');
-  corona.innerHTML = '';
-  const N = 24;
-  for (let i=0; i<N; i++) {
-    const ray = document.createElement('div');
-    ray.className = 'ray';
-    const angle = (i/N)*360;
-    const len = 40 + Math.random()*100;
-    const w = 1+Math.random()*2;
-    ray.style.cssText = `
-      height:${len}px;width:${w}px;
-      transform:rotate(${angle}deg) translateY(-${len/2+160}px);
-      opacity:${.3+Math.random()*.5};
-    `;
-    corona.appendChild(ray);
+// ── CORONA ──
+function buildCorona(){
+  const c=$('corona'); c.innerHTML='';
+  for(let i=0;i<20;i++){
+    const ang=(i/20)*360, len=35+Math.random()*90, w=1+Math.random()*1.8;
+    const ray=document.createElement('div');
+    ray.className='ray';
+    ray.style.cssText=`height:${len}px;width:${w}px;background:linear-gradient(to top,rgba(255,200,0,.55),transparent);transform:rotate(${ang}deg) translateY(-${len/2+145}px);opacity:${.25+Math.random()*.5}`;
+    c.appendChild(ray);
   }
 }
 
-// ── SCROLL ENGINE ──
-const scene   = $('scene');
-const rocket  = $('rocket');
-const sunWrap = $('sun-wrap');
-const sunCore = $('sun-core');
-const pMars   = $('p-mars');
-const pIce    = $('p-ice');
-const pVoid   = $('p-void');
-const nebula  = $('nebula');
-const warpEl  = $('warp');
-const bar     = $('bar');
-const hint    = $('hint');
-const dots    = document.querySelectorAll('.dot');
-const cards   = [0,1,2,3,4].map(i => $(`c${i}`));
+// ── REFS ──
+const scene  =$('scene');
+const rocket =$('rocket');
+const sunWrap=$('sunWrap');
+const pIce   =$('pIce');
+const pMars  =$('pMars');
+const pVoid  =$('pVoid');
+const nebula =$('nebula');
+const bar    =$('bar');
+const hint   =$('hint');
+const dots   =document.querySelectorAll('.ndot');
+const cards  =[0,1,2,3,4].map(i=>$('c'+i));
 
-let rafId = null;
-let lastP = 0;
-
-function getP() {
-  const rect = scene.getBoundingClientRect();
-  const total = scene.scrollHeight - window.innerHeight;
-  return clamp(-rect.top / total, 0, 1);
+function getP(){
+  const total=scene.scrollHeight-window.innerHeight;
+  if(total<=0)return 0;
+  return cl(window.scrollY/total,0,1);
 }
 
-function sec(p) { return Math.min(4, Math.floor(p*5)); }
-function localP(p,s) { return clamp((p - s/5) / .2, 0, 1); }
+// Section = which of 5 sections we're in (0-4)
+// Each section = 20% of scroll (0-.2, .2-.4, .4-.6, .6-.8, .8-1)
+function getSec(p){ return Math.min(4,Math.floor(p*5)); }
+// localP within a section: 0 at start, 1 at end
+function lp(p,s){ return cl((p - s/5)*5, 0, 1); }
 
-function update() {
-  const p = getP();
-  const s = sec(p);
-  const lp = localP(p,s);
+function update(){
+  requestAnimationFrame(update);
+  const p=getP();
+  const s=getSec(p);
 
-  bar.style.width = (p*100)+'%';
-  hint.style.opacity = p < .04 ? '1' : '0';
+  bar.style.width=(p*100)+'%';
+  hint.style.opacity=p<.03?'1':'0';
 
-  // Stars + shooting
   drawBg(p);
-  if (Math.random() < .008) spawnShooter();
 
-  // Particles from rocket
-  const rEl = rocket.getBoundingClientRect();
-  spawnParticles(rEl.left + rEl.width/2, rEl.top + rEl.height);
-  drawParticles();
+  // Rocket position & particle spawn
+  const rBot=lr(8,88,ez(p));
+  const sway=Math.sin(p*Math.PI*7)*13*(1-cl((p-.82)*6,0,1));
+  const tilt=Math.sin(p*Math.PI*7)*7;
+  rocket.style.bottom=rBot+'vh';
+  rocket.style.transform=`translateX(calc(-50% + ${sway}px)) rotate(${tilt}deg)`;
+  rocket.style.filter=p<.5
+    ?'drop-shadow(0 0 16px rgba(0,255,209,.65))'
+    :p<.82
+      ?`drop-shadow(0 0 ${lr(16,32,(p-.5)/.32)}px rgba(${Math.round(lr(0,255,(p-.5)/.32))},${Math.round(lr(255,60,(p-.5)/.32))},${Math.round(lr(209,172,(p-.5)/.32))},.75))`
+      :'drop-shadow(0 0 32px rgba(0,255,209,.95)) drop-shadow(0 0 55px rgba(0,255,209,.35))';
 
-  // Warp effect in section 4
-  const warpP = clamp((p-.8)/.2, 0, 1);
-  warpEl.style.opacity = warpP;
-  drawWarp(warpP);
+  const rRect=rocket.getBoundingClientRect();
+  drawParticles(rRect.left+rRect.width/2, rRect.bottom-10);
 
-  // ── SUN ──
-  // Rises from below, peaks in section 1-2, sinks away
-  const sunY = lerp(80, -60, clamp(p*3,0,1));  // px offset from bottom
-  const sunScale = lerp(.6, 1.1, clamp(p*2.5,0,1)) * lerp(1,.3,clamp((p-.5)*3,0,1));
-  sunWrap.style.transform = `translateX(-50%) translateY(${-sunY}px) scale(${sunScale})`;
-  sunWrap.style.opacity = lerp(0,1,clamp(p*5,0,1)) * lerp(1,0,clamp((p-.6)*4,0,1));
+  // Warp
+  drawWarp(cl((p-.82)/.18,0,1));
 
-  // ── PLANETS ──
-  const scroll = p * (scene.scrollHeight - window.innerHeight);
-  pIce.style.transform   = `translateY(${lerp(100,-200,ease(clamp(p*2.5,0,1)))}px) scale(${lerp(.6,1,ease(clamp(p*2.5,0,1)))})`;
-  pIce.style.opacity     = lerp(0,1,ease(clamp(p*4,0,1))) * lerp(1,0,ease(clamp((p-.5)*4,0,1)));
-  pMars.style.transform  = `translateY(${lerp(0,-scroll*.3,1)}px) translateX(${Math.sin(p*Math.PI)*30}px)`;
-  pMars.style.opacity    = lerp(0,1,ease(clamp((p-.15)*5,0,1))) * lerp(1,0,ease(clamp((p-.55)*5,0,1)));
-  pVoid.style.transform  = `translateY(${lerp(200,0,ease(clamp((p-.55)*4,0,1)))}px) scale(${lerp(.4,1,ease(clamp((p-.55)*4,0,1)))})`;
-  pVoid.style.opacity    = lerp(0,1,ease(clamp((p-.55)*5,0,1))) * lerp(1,0,ease(clamp((p-.85)*5,0,1)));
+  // Sun: fades in section 0-1, out by section 2
+  const sunAlpha=ez(cl(p*8,0,1))*ez(cl(1-(p-.12)*5,0,1));
+  const sunY=lr(-220,60,ez(cl(p*4,0,1)));
+  sunWrap.style.opacity=sunAlpha;
+  sunWrap.style.transform=`translateX(-50%) translateY(${sunY}px)`;
 
-  // ── NEBULA ──
-  nebula.style.opacity = ease(clamp((p-.5)*3,0,1)) * lerp(1,.4,clamp((p-.85)*5,0,1));
+  // Planets
+  const iceAlpha=ez(cl(p*6,0,1))*ez(cl(1-(p-.18)*5,0,1));
+  pIce.style.opacity=iceAlpha;
+  pIce.style.transform=`translateY(${lr(80,-120,ez(cl(p*4,0,1)))}px) scale(${lr(.5,1,ez(cl(p*4,0,1)))})`;
 
-  // ── ROCKET ──
-  const rocketBottom = lerp(5, 85, ease(p));
-  const sway = Math.sin(p*Math.PI*8)*14 * (1-clamp((p-.8)*5,0,1)); // sway fades in warp
-  const tilt = Math.sin(p*Math.PI*8)*8;
-  rocket.style.bottom = rocketBottom+'vh';
-  rocket.style.transform = `translateX(calc(-50% + ${sway}px)) rotate(${tilt}deg)`;
-  // Glow color shifts
-  if (p < .5) {
-    rocket.style.filter = `drop-shadow(0 0 18px rgba(0,255,209,.6))`;
-  } else if (p < .8) {
-    const pp = (p-.5)/.3;
-    rocket.style.filter = `drop-shadow(0 0 ${18+pp*20}px rgba(${lerp(0,255,pp)},${lerp(255,60,pp)},${lerp(209,172,pp)},.7))`;
-  } else {
-    rocket.style.filter = `drop-shadow(0 0 35px rgba(0,255,209,.9)) drop-shadow(0 0 60px rgba(0,255,209,.4))`;
-  }
+  const marsAlpha=ez(cl((p-.18)*7,0,1))*ez(cl(1-(p-.4)*5,0,1));
+  pMars.style.opacity=marsAlpha;
+  pMars.style.transform=`translateX(${Math.sin(p*Math.PI*1.5)*28}px) translateY(${lr(0,-80,ez(cl((p-.18)*5,0,1)))}px)`;
+
+  const voidAlpha=ez(cl((p-.58)*7,0,1))*ez(cl(1-(p-.82)*6,0,1));
+  pVoid.style.opacity=voidAlpha;
+  pVoid.style.transform=`translateY(${lr(80,0,ez(cl((p-.58)*5,0,1)))}px) scale(${lr(.4,1,ez(cl((p-.58)*5,0,1)))})`;
+
+  // Nebula
+  nebula.style.opacity=ez(cl((p-.38)*4,0,1))*lr(1,.3,cl((p-.82)*5,0,1));
 
   // ── CARDS ──
-  cards.forEach((c,i) => {
-    const inSec = s===i;
-    const fadeIn  = ease(clamp(localP(p,i)*4,0,1));
-    const fadeOut = ease(clamp((localP(p,i)-.65)*3,0,1));
-    const op = inSec ? fadeIn*(1-fadeOut*.6) : 0;
-    const ty = inSec ? lerp(40,-15,ease(localP(p,i))) : 40;
-    c.style.opacity = op;
-    c.style.transform = `translateY(${ty}px) scale(${lerp(.97,1,op)})`;
-    c.style.pointerEvents = op > .4 ? 'auto' : 'none';
+  // Each card is fully visible in the middle 50% of its section
+  // Fades in during first 30%, holds, fades out during last 30%
+  cards.forEach((card,i)=>{
+    const local=lp(p,i);           // 0→1 within section i
+    let op;
+    if(s===i){
+      const fadeIn =ez(cl(local/.3,0,1));
+      const fadeOut=ez(cl((local-.7)/.3,0,1));
+      op=fadeIn*(1-fadeOut);
+    } else {
+      op=0;
+    }
+    const ty=lr(36,-12,cl(op+.2,0,1));
+    card.style.opacity=op;
+    card.style.transform=`translateY(${ty}px)`;
+    card.style.pointerEvents=op>.3?'auto':'none';
   });
 
-  // ── NAV DOTS ──
-  dots.forEach((d,i) => d.classList.toggle('on', i===s));
-
-  lastP = p;
-  rafId = requestAnimationFrame(update);
+  // Nav dots
+  dots.forEach((d,i)=>d.classList.toggle('on',i===s));
 }
 
-// ── INIT ──
-function init() {
-  initStars();
-  resizeP();
-  resizeW();
-  initWarpLines();
-  buildCorona();
-}
-
-window.addEventListener('resize', () => {
-  initStars();
-  resizeP();
-  resizeW();
-});
-
-dots.forEach(d => {
-  d.addEventListener('click', () => {
-    const i = parseInt(d.dataset.i);
-    const total = scene.scrollHeight - window.innerHeight;
-    const sceneTop = scene.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo({ top: sceneTop + (i/5)*total + total*.01, behavior:'smooth' });
+// Nav dot clicks
+dots.forEach(d=>{
+  d.addEventListener('click',()=>{
+    const i=parseInt(d.dataset.i);
+    const total=scene.scrollHeight-window.innerHeight;
+    window.scrollTo({top:(i/5)*total+total*.02,behavior:'smooth'});
   });
 });
 
-init();
+window.addEventListener('resize',resize);
+resize();
+buildCorona();
 update();
 </script>
 </body>
